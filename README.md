@@ -1,6 +1,11 @@
 # Graphical-neural-networks-to-solve-molecular-problems
 
-# 一、Dataset
+This project is based on graph neural networks to predict whether small molecule structures are effective against HIV, essentially a supervised training, as detailed in the following description.
+
+This readme is introduced in Chinese (including most of the comments in the code). Please translate it into English if necessary.
+
+
+# 一、数据集
 艾滋病数据集是由药物治疗计划（DTP）艾滋病抗病毒筛查引入的，该计划测试了40,000多个化合物抑制艾滋病复制的能力。筛选结果被评估并分为三类：
 
 - 确认不活跃（CI）
@@ -17,6 +22,17 @@
 - "活性"。筛选结果的三类标签。CI/CM/CA
 
 - "HIV_active"。筛选结果的二进制标签。1（CA/CM）和0（CI）。
+
+# 二、运行
+你将需要rdkit来运行这段代码。
+
+按照这些说明安装rdkit。https://www.rdkit.org/docs/Install.html
+
+至于 pytorch geometric ，请遵循此教程：https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html
+
+确保你的CUDA版本和torch版本与你安装的PyG版本一致。 
+
+最后，模型的运行非常简单。只需要在IDE中执行train.py脚本即可；或者在终端执行命令行python train.py
 
 #  三、项目结构
 ## 3.1、config.py
