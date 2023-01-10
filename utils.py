@@ -1,9 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem.Draw import MolToImage 
 import deepchem as dc 
-import torch 
-
-mlflow.set_tracking_uri("http://localhost:5000")
+import torch  
 
 
 def smiles_to_mol(smiles_string):
