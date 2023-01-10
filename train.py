@@ -7,16 +7,12 @@ from sklearn.metrics import confusion_matrix, f1_score, \
 import numpy as np
 from tqdm import tqdm
 from dataset_featurizer import MoleculeDataset
-from model import GNN
-#import mlflow.pytorch
+from model import GNN 
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import pandas as pd 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-# Specify tracking server
-#mlflow.set_tracking_uri("http://localhost:5000") 
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -89,8 +85,7 @@ def log_conf_matrix(y_pred, y_true, epoch):
     df_cfm = pd.DataFrame(cm, index = classes, columns = classes)
     plt.figure(figsize = (10,7))
     cfm_plot = sns.heatmap(df_cfm, annot=True, cmap='Blues', fmt='g')
-    cfm_plot.figure.savefig(f'data/images/cm_{epoch}.png')
-    #mlflow.log_artifact(f"data/images/cm_{epoch}.png")
+    cfm_plot.figure.savefig(f'data/images/cm_{epoch}.png') 
 
 def calculate_metrics(y_pred, y_true, epoch, type):
     print(f"\n Confusion matrix: \n {confusion_matrix(y_pred, y_true)}")
@@ -99,15 +94,11 @@ def calculate_metrics(y_pred, y_true, epoch, type):
     prec = precision_score(y_true, y_pred)
     rec = recall_score(y_true, y_pred)
     print(f"Precision: {prec}")
-    print(f"Recall: {rec}")
-    #mlflow.log_metric(key=f"Precision-{type}", value=float(prec), step=epoch)
-    #mlflow.log_metric(key=f"Recall-{type}", value=float(rec), step=epoch)
+    print(f"Recall: {rec}") 
     try:
         roc = roc_auc_score(y_true, y_pred)
-        print(f"ROC AUC: {roc}")
-        #mlflow.log_metric(key=f"ROC-AUC-{type}", value=float(roc), step=epoch)
-    except:
-        #mlflow.log_metric(key=f"ROC-AUC-{type}", value=float(0), step=epoch)
+        print(f"ROC AUC: {roc}") 
+    except: 
         print(f"ROC AUC: notdefined")
 
 # %% Run the training
@@ -115,13 +106,8 @@ from mango import scheduler, Tuner
 from config import HYPERPARAMETERS, BEST_PARAMETERS, SIGNATURE
 
 def run_one_training(params):
-    params = params[0]
-    # with mlflow.start_run() as run:
-    #     # Log parameters used in this experiment
-    #     for key in params.keys():
-    #         mlflow.log_param(key, params[key])
-
-        # Loading the dataset
+    params = params[0] 
+    # Loading the dataset
     print("Loading dataset...")
     train_dataset = MoleculeDataset(root="./data/", filename="HIV_train_oversampled.csv")
     test_dataset = MoleculeDataset(root="./data/", filename="HIV_test.csv", test=True)
@@ -136,8 +122,7 @@ def run_one_training(params):
     model_params = {k: v for k, v in params.items() if k.startswith("model_")}
     model = GNN(feature_size=train_dataset[0].x.shape[1], model_params=model_params) 
     model = model.to(device)
-    print(f"Number of parameters: {count_parameters(model)}")
-   # mlflow.log_param("num_params", count_parameters(model))
+    print(f"Number of parameters: {count_parameters(model)}") 
 
     # < 1 increases precision, > 1 recall
     weight = torch.tensor([params["pos_weight"]], dtype=torch.float32).to(device)
@@ -156,21 +141,18 @@ def run_one_training(params):
             # Training
             model.train()
             loss = train_one_epoch(epoch, model, train_loader, optimizer, loss_fn)
-            print(f"Epoch {epoch} | Train Loss {loss}")
-            #mlflow.log_metric(key="Train loss", value=float(loss), step=epoch)
+            print(f"Epoch {epoch} | Train Loss {loss}") 
 
             # Testing
             model.eval()
             if epoch % 5 == 0:
                 loss = test(epoch, model, test_loader, loss_fn)
-                print(f"Epoch {epoch} | Test Loss {loss}")
-                #mlflow.log_metric(key="Test loss", value=float(loss), step=epoch)
+                print(f"Epoch {epoch} | Test Loss {loss}") 
                 
                 # Update best loss
                 if float(loss) < best_loss:
                     best_loss = loss
-                    # Save the currently best model 
-                    #mlflow.pytorch.log_model(model, "model", signature=SIGNATURE)
+                    # Save the currently best model  
                     early_stopping_counter = 0
                 else:
                     early_stopping_counter += 1
